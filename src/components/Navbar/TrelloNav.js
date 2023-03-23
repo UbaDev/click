@@ -18,7 +18,7 @@ const MainNav = styled.div`
     display: flex;
     justify-content: space-between;
     position: relative;
-    background-color: rgba(0,0,0,0.25);
+    background-color: #505050;
 `;
 
 const Logo = styled.div`
@@ -52,8 +52,9 @@ const SignButton = styled.div`
     background-color: rgba(0,0,0,0.16);
     color: white;
     padding: 0.4rem 0.6rem 0.4rem 0.6rem;
+    background-color: #528bee;
     &:hover {
-        background-color: rgba(255,255,255,0.35);
+        background-color: #4848f0;
         cursor: pointer;
     }
     margin: 0 4px 0 4px;

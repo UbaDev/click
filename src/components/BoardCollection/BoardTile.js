@@ -39,6 +39,7 @@ const Tile = styled.div`
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     font-size: 16px;
     font-weight: 500;
+    background-color: #528bee;
 
     &:hover ${TileOptions} {
         visibility: visible;
@@ -62,7 +63,7 @@ export default function BoardTile(props) {
         <FadeIn>
             <Tile className={"outer"} onClick={props.onClick}>
                 <TileOptions className={"inner"} onMouseDown={handleDeleteBoard}>
-                    <FontAwesomeIcon className={"inner"} icon={faTrash} />
+                    <FontAwesomeIcon className={"inner"} icon={faTrash} color={'red'} />
                 </TileOptions>
                 <TileText >{props.title}</TileText>
             </Tile>

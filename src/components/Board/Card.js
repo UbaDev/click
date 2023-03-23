@@ -74,7 +74,7 @@ const TrelloCard = ({ text, id, index, listID }) => {
                         <StyledCardContent>
                             {text}
                         </StyledCardContent>
-                        <CardOptions onMouseUp={handleDeleteCard}><FontAwesomeIcon icon={faTrash} /></CardOptions>
+                        <CardOptions onMouseUp={handleDeleteCard}><FontAwesomeIcon icon={faTrash} color={'red'} /></CardOptions>
                     </StyledCard>
                 </Div>
             )}

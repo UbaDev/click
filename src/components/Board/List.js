@@ -11,7 +11,7 @@ import ActionButton from './ActionButton';
 import TrelloCard from './Card';
 
 const ListStyle = styled.div`
-    background-color: #ebecf0;
+    background-color: #8ecbea;
     border-radius: 3px;
     width: 300px;
     height: 100%;
@@ -75,7 +75,7 @@ const List = ({ title, cards, listID, index }) => {
                     <ListStyle {...provided.draggableProps} ref={provided.innerRef} {...provided.dragHandleProps}>
                         <ListHeader>
                             <Title>{title}</Title>
-                            <ListOptions onMouseUp={handleDeleteList}><FontAwesomeIcon icon={faTrash} /></ListOptions>
+                            <ListOptions onMouseUp={handleDeleteList}><FontAwesomeIcon icon={faTrash} color={'red'} /></ListOptions>
                         </ListHeader>
                         <Droppable droppableId={String(listID)}>
                             {(provided) => (

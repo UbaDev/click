@@ -13,7 +13,7 @@ import InviteMenu from './InviteMenu';
 const NavWrapper = styled.div`
     display: inline-flex;
     align-items: center;
-    /*background-color: ${(props) => props.color || 'rgba(0,0,0,.15)'};*/
+    /background-color: ${(props) => props.color || 'rgba(0,0,0,.15)'};/
     background-color: rgba(0,0,0,0.15);
     justify-content: space-between;
     width: 100%;
@@ -34,22 +34,24 @@ const MenuActionButton = styled.div`
     padding: 0.4rem 0.6rem 0.4rem 0.6rem;
     margin-right: 0.4rem;
     &:hover {
-        background-color: rgba(255,255,255,0.35);
+        background-color: #4848f0;
         cursor: pointer;
     }
     font-size: 18px;
     font-weight: bold;
     top: 50%;
     align-items: center;
+    background-color: #528bee;
 `;
 const MenuButton = styled.div`
     border-radius: .3rem;
     padding: 0.4rem 0.6rem 0.4rem 0.6rem;
     background-color: rgba(0,0,0,0.16);
     color: white;
+    background-color: #528bee;
     
     &:hover {
-        background-color: rgba(255,255,255,0.35);
+        background-color: #4848f0;
         cursor: pointer;
     }
 `;
