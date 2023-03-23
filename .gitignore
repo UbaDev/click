@@ -11,10 +11,7 @@
 # production
 /src/unsplash
 /build
-firebase-debug.log
-/.firebase
-/src/assets
-/src/firebase
+
 yarn.lock
 
 # misc

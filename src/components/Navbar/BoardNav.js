@@ -52,10 +52,12 @@ const MenuButton = styled.div`
         background-color: rgba(255,255,255,0.35);
         cursor: pointer;
     }
-    
 `;
 
 function BoardNav(props) {
+
+
+  
 
     const [showNameMenu, setShowNameMenu] = useState(false);
     const [boardName, setBoardName] = useState("");
@@ -126,8 +128,10 @@ function BoardNav(props) {
 
 
     if (props.boards.isLoading) {
+      
         return (<div></div>);
     } else {
+      let user = myFirebase.auth().currentUser;
         return (
           <NavWrapper color={backgroundColor}>
             <Nav>
@@ -135,6 +139,8 @@ function BoardNav(props) {
                 <MenuActionButton onClick={handleShowNameMenu}>
                   {getName()}
                 </MenuActionButton>
+
+                
                 {showNameMenu && (
                   <BoardTitleMenu
                     handleShowNameMenu={handleShowNameMenu}
@@ -143,11 +149,18 @@ function BoardNav(props) {
                     onNameChange={onNameChange}
                   />
                 )}
-                {
+
+                {user.email === "admin@gmail.com" ?
+                (
                   <MenuActionButton onClick={handleShowInvite}>
                     Asignar empleado
                   </MenuActionButton>
-                }
+                ) : (
+                  <MenuActionButton>
+                    
+                  </MenuActionButton>
+               ) }
+                
 
                 {showInviteMenu && (
                   <InviteMenu
