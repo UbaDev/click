@@ -4,6 +4,13 @@ import React, { Fragment, useEffect, useState } from 'react';
 import Loader from "react-loader-spinner";
 import { connect, useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  uploadBytesResumable,
+} from "firebase/storage"; 
 
 import TextAreaAutosize from "react-textarea-autosize";
 import Container from "@material-ui/core/Container";
@@ -16,7 +23,7 @@ import Typography from "@material-ui/core/Typography";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import { NavLink, Redirect } from "react-router-dom";
 
-import { myFirebase } from "../../firebase/firebase";
+import { myFirebase, stor} from "../../firebase/firebase";
 import Button from "@material-ui/core/Button";
 
 import { changeBackground, getPhotosList } from '../../actions/';
@@ -239,66 +246,91 @@ const SearchPhotos = styled.input`
 
 
 function BoardMenu(props) {
- const classes = useStyles();
-    // Background states
-    const [changeBackground, setChangeBackground] = useState(false);
-    const [changePhoto, setChangePhoto] = useState(false);
-    const [changeBackgroundColor, setChangeBackgroundColor] = useState(false);
+  const classes = useStyles();
+  // Background states
+  const [changeBackground, setChangeBackground] = useState(false);
+  const [changePhoto, setChangePhoto] = useState(false);
+  const [changeBackgroundColor, setChangeBackgroundColor] = useState(false);
 
-    // redux state
-    const { photosList } = props.theme;
+  // redux state
+  const { photosList } = props.theme;
 
-    // passed props
-    const { showBoardMenu, toggleMenu } = props;
+  // passed props
+  const { showBoardMenu, toggleMenu } = props;
 
+  const colorsList = [
+    "rgb(0, 121, 191)",
+    "rgb(210, 144, 52)",
+    "rgb(81, 152, 57)",
+    "rgb(176, 70, 50)",
+    "rgb(137, 96, 158)",
+    "rgb(205, 90, 145)",
+    "rgb(75, 191, 107)",
+    "rgb(0, 174, 204)",
+  ];
 
-    const colorsList = [
-        'rgb(0, 121, 191)',
-        'rgb(210, 144, 52)',
-        'rgb(81, 152, 57)',
-        'rgb(176, 70, 50)',
-        'rgb(137, 96, 158)',
-        'rgb(205, 90, 145)',
-        'rgb(75, 191, 107)',
-        'rgb(0, 174, 204)'
-    ];
-
-    // hide/show the menu section where you pick either background or photo
-    const toggleBackground = () => {
-        if (changeBackgroundColor && changeBackground) {
-            setChangeBackgroundColor(!changeBackgroundColor);
-        }
-        else if (changePhoto && changeBackground) {
-            setChangePhoto(!changePhoto);
-        }
-        else {
-            setChangeBackground(!changeBackground);
-        }
+  // hide/show the menu section where you pick either background or photo
+  const toggleBackground = () => {
+    if (changeBackgroundColor && changeBackground) {
+      setChangeBackgroundColor(!changeBackgroundColor);
+    } else if (changePhoto && changeBackground) {
+      setChangePhoto(!changePhoto);
+    } else {
+      setChangeBackground(!changeBackground);
     }
+  };
 
-    let nombre = myFirebase.auth().currentUser.displayName;
-    let correo = myFirebase.auth().currentUser.email;
-        
-    
-    const [details, setDetails] = useState({
-      nombre: '',
-      correo: '',
-      fecha: '',
-      asignacion: '',
-      actividades: '',
-      horas: '',
-      minutos: '',
-      comentarios: '',
-      minutosNotrabajados : '',
-    });
+  let nombre = myFirebase.auth().currentUser.displayName;
+  let correo = myFirebase.auth().currentUser.email;
 
-    const PostData = async(e) => {
+  const [details, setDetails] = useState({
+    nombre: "",
+    correo: "",
+    fecha: "",
+    asignacion: "",
+    actividades: "",
+    horas: "",
+    minutos: "",
+    comentarios: "",
+    minutosNotrabajados: "",
+    file: "",
+  });
 
-      alert("Se han registrado las metricas correctamente")
-
+    const [image, setImage] = useState("");
+    const [Url, setUrl] = useState("");
 
 
-        const {
+
+ 
+  const PostData = async (e) => {
+
+      
+    alert("Se han registrado las metricas correctamente");
+
+    const {
+      fecha,
+      asi,
+      asignacion,
+      actividades,
+      horas,
+      minutos,
+      comentarios,
+      minutosNotrabajados,
+      file,
+    } = details;
+
+
+
+    const res = await fetch(
+      "https://click-manager-default-rtdb.firebaseio.com/metricas.json",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          correo,
+          nombre,
           fecha,
           asi,
           asignacion,
@@ -307,173 +339,179 @@ function BoardMenu(props) {
           minutos,
           comentarios,
           minutosNotrabajados,
-        } = details;
+          file,
+        }),
+      }
+    );
 
-        const res = await fetch(
-          "https://click-manager-default-rtdb.firebaseio.com/metricas.json",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              correo,
-              nombre,
-              fecha,
-              asi,
-              asignacion,
-              actividades, 
-              horas, 
-              minutos,
-              comentarios,
-              minutosNotrabajados,
-            }),
-          }
-        );
-        
-    }
+        if (image == null) return;
+        setUrl("Getting Download Link...");
+
+        // Sending File to Firebase Storage
+        stor
+          .ref(`/images/${image.name}`)
+          .put(image)
+          .on("state_changed", alert("success"), alert, () => {
+            // Getting Download Link
+            stor
+              .ref("images")
+              .child(image.name)
+              .getDownloadURL()
+              .then((url) => {
+                setUrl(url);
+              });
+          });
 
     
+  }; // State to store uploaded file
 
-    return (
-      <MenuWrapper showBoardMenu={showBoardMenu}>
-        <Menu>
-          <MenuItems>
-            {changeBackground ? (
-              <Title>Change Background</Title>
-            ) : (
-              <Title>Registro de métricas</Title>
-            )}
-            {changeBackground ? (
-              <MenuArrow onClick={toggleBackground}>
-                <FontAwesomeIcon icon={faAngleLeft} />
-              </MenuArrow>
-            ) : null}
-            <CloseMenu onClick={toggleMenu}>
-              <FontAwesomeIcon icon={faTimes} />
-            </CloseMenu>
-          </MenuItems>
-          <MenuItems>
-            <form className={classes.form}>
-              <Grid container spacing={2}>
-                <Grid item xs={4}>
-                  <TextField
-                  
-                    variant="outlined"
-                    required
-                    fullWidth
-                    type="date"
-                    id="fecha"
-                    label="Fecha de métrica"
-                    name="fecha"
-                    onChange={(e) => {
-                      setDetails({ ...details, fecha: e.target.value });
-                    }}
-                  />
-                </Grid>
 
-                <Grid item xs={8}>
-                  <TextField
-                    variant="outlined"
-                    required
-                    fullWidth
-                    id="asi"
-                    label="Asignación"
-                    name="asi"
-                    onChange={(e) => {
-                      setDetails({ ...details, asignacion: e.target.value });
-                    }}
-                  />
-                </Grid>
 
-                <Grid item xs={12}>
-                  <TextField
-                    variant="outlined"
-                    required
-                    fullWidth
-                    id="act"
-                    label="Actividades realizadas"
-                    name="act"
-                    onChange={(e) => {
-                      setDetails({ ...details, actividades: e.target.value });
-                    }}
-                  />
-                </Grid>
 
-                <Grid item xs={4}>
-                  <TextField
-                    variant="outlined"
-                    required
-                    fullWidth
-                    type="number"
-                    id="horas"
-                    label="Horas trabajadas"
-                    name="horas"
-                    onChange={(e) => {
-                      setDetails({ ...details, horas: e.target.value });
-                    }}
-                  />
-                </Grid>
 
-                <Grid item xs={4}>
-                  <TextField
-                    variant="outlined"
-                    required
-                    type="number"
-                    fullWidth
-                    id="min"
-                    label="Minutos trabajados"
-                    name="min"
-                    onChange={(e) => {
-                      setDetails({ ...details, minutos: e.target.value });
-                    }}
-                  />
-                </Grid>
 
-                <Grid item xs={4}>
-                  <TextField
-                    variant="outlined"
-                    required
-                    type="number"
-                    fullWidth
-                    id="minn"
-                    label="Minutos no trabajados"
-                    name="minn"
-                    onChange={(e) => {
-                      setDetails({ ...details, minutosNotrabajados: e.target.value });
-                    }}
-                  />
-                </Grid>
-
-                <Grid item xs={12}>
-                  <TextField
-                    variant="outlined"
-                    fullWidth
-                    id="c"
-                    label="Comentarios"
-                    name="c"
-                    onChange={(e) => {
-                      setDetails({ ...details, comentarios: e.target.value });
-                    }}
-                  />
-                </Grid>
+  return (
+    <MenuWrapper showBoardMenu={showBoardMenu}>
+      <Menu>
+        <MenuItems>
+          {changeBackground ? (
+            <Title>Change Background</Title>
+          ) : (
+            <Title>Registro de métricas</Title>
+          )}
+          {changeBackground ? (
+            <MenuArrow onClick={toggleBackground}>
+              <FontAwesomeIcon icon={faAngleLeft} />
+            </MenuArrow>
+          ) : null}
+          <CloseMenu onClick={toggleMenu}>
+            <FontAwesomeIcon icon={faTimes} />
+          </CloseMenu>
+        </MenuItems>
+        <MenuItems>
+          <form className={classes.form}>
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  type="date"
+                  id="fecha"
+                  label="Fecha de métrica"
+                  name="fecha"
+                  onChange={(e) => {
+                    setDetails({ ...details, fecha: e.target.value });
+                  }}
+                />
               </Grid>
-              <div
-                style={{ marginTop: "10px", color: "red", textAlign: "center" }}
-              ></div>
-              <Button
-                onClick={PostData}
-                variant="contained"
-                color="primary"
-                className={classes.submit}
-              >
-                Registrar metricas
-              </Button>
-            </form>
-          </MenuItems>
-        </Menu>
-      </MenuWrapper>
-    );
+
+              <Grid item xs={8}>
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  id="asi"
+                  label="Asignación"
+                  name="asi"
+                  onChange={(e) => {
+                    setDetails({ ...details, asignacion: e.target.value });
+                  }}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  id="act"
+                  label="Actividades realizadas"
+                  name="act"
+                  onChange={(e) => {
+                    setDetails({ ...details, actividades: e.target.value });
+                  }}
+                />
+              </Grid>
+
+              <Grid item xs={4}>
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  type="number"
+                  id="horas"
+                  label="Horas trabajadas"
+                  name="horas"
+                  onChange={(e) => {
+                    setDetails({ ...details, horas: e.target.value });
+                  }}
+                />
+              </Grid>
+
+              <Grid item xs={4}>
+                <TextField
+                  variant="outlined"
+                  required
+                  type="number"
+                  fullWidth
+                  id="min"
+                  label="Minutos trabajados"
+                  name="min"
+                  onChange={(e) => {
+                    setDetails({ ...details, minutos: e.target.value });
+                  }}
+                />
+              </Grid>
+
+              <Grid item xs={4}>
+                <TextField
+                  variant="outlined"
+                  required
+                  type="number"
+                  fullWidth
+                  id="minn"
+                  label="Minutos no trabajados"
+                  name="minn"
+                  onChange={(e) => {
+                    setDetails({
+                      ...details,
+                      minutosNotrabajados: e.target.value,
+                    });
+                  }}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <TextField
+                  variant="outlined"
+                  fullWidth
+                  id="c"
+                  label="Comentarios"
+                  name="c"
+                  onChange={(e) => {
+                    setDetails({ ...details, comentarios: e.target.value });
+                  }}
+                />
+              </Grid>
+
+            </Grid>
+            <div
+              style={{ marginTop: "10px", color: "red", textAlign: "center" }}
+            ></div>
+            <Button
+              onClick={PostData}
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+            >
+              Registrar metricas
+            </Button>
+          </form>
+        </MenuItems>
+      </Menu>
+    </MenuWrapper>
+  );
 }
 
 function Search() {

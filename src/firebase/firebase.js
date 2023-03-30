@@ -2,6 +2,8 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/database";
 
+import "firebase/storage"; 
+
 const firebaseConfig = {
   apiKey: "AIzaSyATx963e-2lJX-3Ln6yBVDrOiPK6BCkD14",
   authDomain: "click-manager.firebaseapp.com",
@@ -13,3 +15,6 @@ const firebaseConfig = {
 };
 
 export const myFirebase = firebase.initializeApp(firebaseConfig);
+export const storage = firebase.storage().ref();
+
+export const stor = firebase.storage();
