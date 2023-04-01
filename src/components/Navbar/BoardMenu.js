@@ -303,10 +303,9 @@ function BoardMenu(props) {
 
  
   const PostData = async (e) => {
-
-    e.preventDefault();  
-    alert("Se han registrado las metricas correctamente");
-
+    e.preventDefault(); 
+    toggleMenu();
+    
     const {
       fecha,
       asi,
@@ -318,9 +317,9 @@ function BoardMenu(props) {
       minutosNotrabajados,
       file,
     } = details;
-
-
-
+    
+    
+    
     const res = await fetch(
       "https://click-manager-default-rtdb.firebaseio.com/metricas.json",
       {
@@ -342,9 +341,11 @@ function BoardMenu(props) {
           file,
         }),
       }
-    );
-
-        if (image == null) return;
+      );
+      
+      alert("Se han registrado las metricas correctamente");
+      
+      if (image == null) return;
         setUrl("Getting Download Link...");
 
         // Sending File to Firebase Storage
