@@ -78,7 +78,7 @@ export default function SignIn(props) {
           <Typography component="h1" variant="h5">
             Iniciar sesión
           </Typography>
-          <form onSubmit={handleSignIn} className={classes.form} noValidate>
+          <form onSubmit={handleSignIn} className={classes.form} >
             <TextField
               variant="outlined"
               margin="normal"

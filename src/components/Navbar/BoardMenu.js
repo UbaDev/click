@@ -304,7 +304,7 @@ function BoardMenu(props) {
  
   const PostData = async (e) => {
 
-      
+    e.preventDefault();  
     alert("Se han registrado las metricas correctamente");
 
     const {
@@ -361,12 +361,9 @@ function BoardMenu(props) {
                 setUrl(url);
               });
           });
-
+    
     
   }; // State to store uploaded file
-
-
-
 
 
 
@@ -389,7 +386,7 @@ function BoardMenu(props) {
           </CloseMenu>
         </MenuItems>
         <MenuItems>
-          <form className={classes.form}>
+          <form className={classes.form} onSubmit={PostData}>
             <Grid container spacing={2}>
               <Grid item xs={4}>
                 <TextField
@@ -410,6 +407,7 @@ function BoardMenu(props) {
                 <TextField
                   variant="outlined"
                   required
+                  inputProps={{ maxLength: 70 }}
                   fullWidth
                   id="asi"
                   label="Asignación"
@@ -424,6 +422,7 @@ function BoardMenu(props) {
                 <TextField
                   variant="outlined"
                   required
+                  inputProps={{ maxLength: 400 }}
                   fullWidth
                   id="act"
                   label="Actividades realizadas"
@@ -500,7 +499,7 @@ function BoardMenu(props) {
               style={{ marginTop: "10px", color: "red", textAlign: "center" }}
             ></div>
             <Button
-              onClick={PostData}
+              type="submit"
               variant="contained"
               color="primary"
               className={classes.submit}

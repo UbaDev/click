@@ -76,7 +76,7 @@ const SignUp = ({ auth, history }) => {
           <Typography component="h1" variant="h5">
             Registrarse
           </Typography>
-          <form onSubmit={handleSignUp} className={classes.form} noValidate>
+          <form onSubmit={handleSignUp} className={classes.form} >
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
